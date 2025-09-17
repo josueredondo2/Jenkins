@@ -1,21 +1,8 @@
-node {
-    withCredentials([usernamePassword(credentialsId: 'jenkins-api',
-                                      usernameVariable: 'JENKINS_USER',
-                                      passwordVariable: 'JENKINS_TOKEN')]) {
-        powershell '''
-            $jenkinsUrl = "http://localhost:9090"
+powershell '''
+    $jenkinsUrl = "http://localhost:9090/computer/api/json"
+    $user = $env:JENKINS_USER
+    $token = $env:JENKINS_TOKEN
 
-            $pair = "$env:JENKINS_USER:$env:JENKINS_TOKEN"
-            $encodedCreds = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($pair))
-
-            $headers = @{ Authorization = "Basic $encodedCreds" }
-
-            $response = Invoke-RestMethod -Uri "$jenkinsUrl/computer/api/json" -Headers $headers
-
-            $response.computer | Where-Object { $_.displayName -ne "Built-In Node" } |
-                ForEach-Object {
-                    Write-Output "Nodo: $($_.displayName) | Online: $($_.offline -eq $false)"
-                }
-        '''
-    }
-}
+    $result = curl.exe -s -u "$user:$token" $jenkinsUrl
+    Write-Output $result
+'''
