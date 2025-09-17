@@ -5,11 +5,10 @@ pipeline {
         stage('Listar Nodos') {
             steps {
                 script {
-                    println "=== Lista de Nodos en Jenkins ==="
-                    jenkins.model.Jenkins.instance.nodes.each { nodo ->
-                        println "Nombre: ${nodo.displayName}, Descripción: ${nodo.nodeDescription}, Estado: ${nodo.toComputer()?.online ? 'ONLINE' : 'OFFLINE'}"
-                    }
-                    println "=== Fin de la Lista ==="
+                    // Esto devuelve los nombres de los nodos que cumplen con el label
+                    def nodos = nodesByLabel label: '', offline: false
+                    println "=== Nodos en línea ==="
+                    nodos.each { println it }
                 }
             }
         }
