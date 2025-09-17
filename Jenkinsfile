@@ -2,7 +2,7 @@ pipeline {
     agent none
 
     parameters {
-        string(name: 'TARGET_NODE', defaultValue: 'built-in', description: 'Nodo seleccionado automáticamente')
+        string(name: 'TARGET_NODE', description: 'Nodo seleccionado automáticamente')
     }
 
     stages {
