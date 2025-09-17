@@ -1,8 +1,17 @@
-powershell '''
-    $jenkinsUrl = "http://localhost:9090/computer/api/json"
-    $user = $env:JENKINS_USER
-    $token = $env:JENKINS_TOKEN
+pipeline {
+    agent any
 
-    $result = curl.exe -s -u "$user:$token" $jenkinsUrl
-    Write-Output $result
-'''
+    stages {
+        stage('Listar Nodos') {
+            steps {
+                script {
+                    println "=== Lista de Nodos en Jenkins ==="
+                    jenkins.model.Jenkins.instance.nodes.each { nodo ->
+                        println "Nombre: ${nodo.displayName}, Descripción: ${nodo.nodeDescription}, Estado: ${nodo.toComputer()?.online ? 'ONLINE' : 'OFFLINE'}"
+                    }
+                    println "=== Fin de la Lista ==="
+                }
+            }
+        }
+    }
+}
