@@ -4,7 +4,7 @@ pipeline {
     parameters {
         choice(
             name: 'TARGET_NODE',
-            choices: ['Controlador', 'OtroNodo'],
+            choices: ['Controlador', 'OtroNodox'],
             description: 'Nodo donde ejecutar el query en SQL Server'
         )
     }
