@@ -4,33 +4,38 @@ pipeline {
     parameters {
         choice(
             name: 'TARGET_NODE',
-            choices: ['built-in', 'ServidorRemoto', 'Controlador'],
-            description: 'Selecciona el nodo donde ejecutar el query'
+            choices: ['Controlador', 'OtroNodo'],
+            description: 'Nodo donde ejecutar el query en SQL Server'
         )
     }
 
     environment {
-        // ID de las credenciales almacenadas en Jenkins
-        DB_CREDENTIALS = credentials('sqlserver-cred-id')  
+        DB_CREDENTIALS = credentials('sqlserver-cred-id')
     }
 
     stages {
+        stage('Checkout') {
+            // Siempre en el nodo central (master/controller)
+            agent { label 'built-in' }
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Ejecutar query en SQL Server') {
             agent { label "${params.TARGET_NODE}" }
             steps {
                 powershell '''
                     Write-Host "Ejecutando query en el nodo: $env:COMPUTERNAME"
 
-                    # Datos de conexión
                     $SqlServer = "localhost"
                     $Database = "master"
                     $User = "${env.DB_CREDENTIALS_USR}"
                     $Password = "${env.DB_CREDENTIALS_PSW}"
 
-                    # Query a ejecutar
+                    # Query de prueba
                     $Query = "SELECT HOST_NAME();"
 
-                    # Ejecutar con sqlcmd
                     sqlcmd -S $SqlServer -d $Database -U $User -P $Password -Q $Query
                 '''
             }
